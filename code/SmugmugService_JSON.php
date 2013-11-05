@@ -5,8 +5,8 @@
  *
  * A wrapper for the Smugmug JSON API
  *
- * @package
- * @author Mellisa Hankins <mellisa.hankins@me.com>
+ * @package milkyway/silverstripe-smugmug
+ * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
 class SmugmugService_JSON {

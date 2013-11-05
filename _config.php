@@ -3,6 +3,6 @@
  * Milkyway Multimedia
  * _config.php
  *
- * @package smugmug
- * @author Mellisa Hankins <mellisa.hankins@me.com>
+ * @package milkyway/silverstripe-smugmug
+ * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */

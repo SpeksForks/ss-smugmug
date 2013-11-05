@@ -3,8 +3,8 @@
  * Milkyway Multimedia
  * Smugmuggable.php
  *
- * @package
- * @author Mellisa Hankins <mellisa.hankins@me.com>
+ * @package milkyway/silverstripe-smugmug
+ * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
 class Smugmuggable extends DataExtension {
