@@ -55,3 +55,6 @@ Smugmug Album can be reached with the method $Info
 
 For all the fields available on an image/album object, please refer to the Smugmug API Documentation:
 http://api.smugmug.com/services/api/?version=1.3.0
+
+Specifically for Image Object:
+http://api.smugmug.com/services/api/?version=1.3.0&method=smugmug.images.getInfo
