@@ -16,7 +16,7 @@ The Smugmug Module allows you to access items in your templates via the Smugmug 
 ## Install using composer
 
 ```
-composer require milkyway/smugmug:*
+composer require milkyway/silverstripe-smugmug:*
 ```
 
 ## Setting up
