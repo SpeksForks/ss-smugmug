@@ -1,8 +1,0 @@
----
-Name: smugmug
-After:
-  - 'framework/*'
-  - 'cms/*'
----
-Smugmuggable:
-  json_endpoint: 'http://api.smugmug.com/services/api/json/1.3.0'

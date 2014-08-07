@@ -2,6 +2,8 @@
 
 The Smugmug Module allows you to access items in your templates via the Smugmug JSON API
 
+**Volatile API, please do not use in production**
+
 ## Requirements
 
 *  SilverStripe 3.1
@@ -16,13 +18,13 @@ The Smugmug Module allows you to access items in your templates via the Smugmug 
 ## Install using composer
 
 ```
-composer require milkyway/silverstripe-smugmug:*
+composer require milkyway-multimedia/ss-smugmug:*
 ```
 
 ## Setting up
 
 This module is not an out of the box module. To add the ability to add Smugmug Albums to your
-page, add the following at the end of your yaml config (mysql/_config/*)
+page, add the following at the end of your yaml config (mysite/_config/*)
 
 ```
 Smugmuggable:

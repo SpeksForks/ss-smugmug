@@ -1,0 +1,8 @@
+---
+Name: smugmug-cms
+Only:
+  classexists: 'SiteConfig'
+---
+SiteConfig:
+  extensions:
+    - Milkyway\SS\Smugmug\Extensions\SiteConfig
