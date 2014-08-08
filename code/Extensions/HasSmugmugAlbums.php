@@ -35,7 +35,7 @@ class HasSmugmugAlbums extends \DataExtension
 
     function updateCMSFields(\FieldList $fields)
     {
-        if ($this->owner instanceof SiteTree) {
+        if ($this->owner instanceof \SiteTree) {
             return;
         }
 
@@ -54,7 +54,7 @@ class HasSmugmugAlbums extends \DataExtension
 
     function updateSettingsFields($fields)
     {
-        if ($this->owner instanceof SiteTree) {
+        if ($this->owner instanceof \SiteTree) {
             $fields->addFieldsToTab(
                 'Root.Smugmug',
                 [

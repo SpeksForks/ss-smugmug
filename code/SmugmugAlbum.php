@@ -53,7 +53,6 @@ class SmugmugAlbum extends DataObject {
         );
 
         $fields = parent::getCMSFields();
-
         return $fields;
     }
 
