@@ -130,11 +130,11 @@ class JSON {
         $settings = array_merge(['APIKey' => $this->key, 'NickName' => $this->nickname, 'method' => $action], $settings);
         $cacheKey = $this->getCacheKey($settings);
 
-        if(isset($_GET['flush']) || !$cache || !($body = unserialize($this->cache()->load($cacheKey)))) {
+        if(isset($_GET['flush']) || isset($_GET['smugmug']) || !$cache || !($body = unserialize($this->cache()->load($cacheKey)))) {
             try {
                 $response = $this->http()->{$this->method}(
                     $this->endpoint(),
-                    $settings
+                    ['query' => $settings]
                 );
             } catch(RequestException $e) {
                 if(($response = $e->getResponse()) && $body = $this->parseResponse($response)) {

@@ -20,7 +20,7 @@ class HasSmugmugAlbums extends \DataExtension
 
     public static function get_extra_config($class, $extension, $args)
     {
-        $type = isset($args[0]) ? $args[0] : $class;
+        $type = isset($args[1]) ? $args[1] : $class;
 
         \Config::inst()->update(
             'SmugmugAlbum',
@@ -33,9 +33,16 @@ class HasSmugmugAlbums extends \DataExtension
         return null;
     }
 
+    protected $useCMSFieldsAlways;
+
+    public function __construct($useCMSFieldsAlways = false) {
+        parent::__construct();
+        $this->useCMSFieldsAlways = $useCMSFieldsAlways;
+    }
+
     function updateCMSFields(\FieldList $fields)
     {
-        if ($this->owner instanceof \SiteTree) {
+        if (!$this->useCMSFieldsAlways && ($this->owner instanceof \SiteTree)) {
             return;
         }
 
@@ -54,7 +61,7 @@ class HasSmugmugAlbums extends \DataExtension
 
     function updateSettingsFields($fields)
     {
-        if ($this->owner instanceof \SiteTree) {
+        if (!$this->useCMSFieldsAlways && ($this->owner instanceof \SiteTree)) {
             $fields->addFieldsToTab(
                 'Root.Smugmug',
                 [

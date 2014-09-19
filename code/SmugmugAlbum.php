@@ -19,6 +19,7 @@ class SmugmugAlbum extends DataObject {
     ];
 
     protected $repository;
+    protected $mappedRepository;
 
     protected function repository() {
         if(!$this->repository)
@@ -27,15 +28,23 @@ class SmugmugAlbum extends DataObject {
         return $this->repository;
     }
 
+    protected function mappedRepository() {
+        if(!$this->mappedRepository)
+            $this->mappedRepository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayRepository', Utilities::env_value('APIKey'), Utilities::env_value('Nickname'));
+
+        return $this->mappedRepository;
+    }
+
     public function getCMSFields() {
         $this->beforeUpdateCMSFields(function(FieldList $fields) {
                 $fields->insertBefore($lists = Select2Field::create('SmugmugAlbumID', _t('Smugmug.ALBUM_FROM_SMUGMUG', 'Album from Smugmug'), '',
-                        $this->repository()->albums(), null, 'Title', 'ID|Title'
+                        $this->mappedRepository()->albums(), null, 'Title', 'ID||Key'
                     ), 'Title');
 
                 $lists->requireSelection = true;
                 $lists->minSearchLength = 0;
                 $lists->suggestURL = false;
+                $lists->prefetch = 999999999999;
 
                 if($this->Title)
                     $fields->insertAfter(CheckboxField::create('UpdateTitleFromSmugmug', _t('Smugmug.TITLE_FROM_SMUGMUG', 'Update to use title from Smugmug')), 'Title');
@@ -112,11 +121,15 @@ class SmugmugAlbum extends DataObject {
 
     private $_updating = false;
 
+    public function getSmugmugAlbumID() {
+        return ($this->SmugmugId && $this->SmugmugKey) ? $this->SmugmugId . '||' . $this->SmugmugKey : null;
+    }
+
     public function saveSmugmugAlbumID($album = null) {
-        if($album && $album != $this->SmugmugID . '||' . $this->SmugmugKey) {
+        if($album && $album != $this->SmugmugId . '||' . $this->SmugmugKey) {
             list($id, $key) = explode('||', $album);
 
-            $this->saveSmugmugID($id);
+            $this->saveSmugmugId($id);
             $this->saveSmugmugKey($key);
 
             if(!$this->Title && $info = $this->Info)
@@ -126,9 +139,9 @@ class SmugmugAlbum extends DataObject {
         }
     }
 
-    public function saveSmugmugID($data = null) {
+    public function saveSmugmugId($data = null) {
         if(!$this->_updating && $data)
-            $this->SmugmugID = $data;
+            $this->SmugmugId = $data;
     }
 
     public function saveSmugmugKey($data = null) {
