@@ -16,7 +16,17 @@ class SmugmugConfig extends DataObject
     ];
 
     public function getCMSFields() {
-        $this->beforeUpdateCMSFields(function(FieldList $fields) {
+        $this->addBeforeFieldMethodsCallback('updateCMSFields');
+        return parent::getCMSFields();
+    }
+
+    public function getFrontEndFields($params = null) {
+        $this->addBeforeFieldMethodsCallback('updateFrontEndFields');
+        return parent::getFrontendFields($params);
+    }
+
+    protected function addBeforeFieldMethodsCallback($method) {
+        $this->beforeExtending($method, function($fields) {
                 if($api = $fields->dataFieldByName('APIKey'))
                     $fields->replaceField('APIKey', $api->castedCopy('TextField')->setTitle(_t('Smugmug.API_KEY', 'API Key'))->setAttribute('placeholder', Utilities::env_value('APIKey', $this->owner)));
 
@@ -24,8 +34,5 @@ class SmugmugConfig extends DataObject
                     $nickname->setAttribute('placeholder', Utilities::env_value('Nickname', $this->owner));
             }
         );
-
-        $fields = parent::getCMSFields();
-        return $fields;
     }
 } 

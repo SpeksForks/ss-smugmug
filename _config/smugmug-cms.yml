@@ -5,4 +5,4 @@ Only:
 ---
 SiteConfig:
   extensions:
-    - Milkyway\SS\Smugmug\Extensions\SiteConfig
+    - Milkyway\SS\Smugmug\Extensions\HasSmugmugConfig('Modules.Smugmug')
