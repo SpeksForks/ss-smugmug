@@ -21,6 +21,9 @@
 		"milkyway-multimedia/ss-zen-forms": "dev-master",
 		"guzzlehttp/guzzle"     : "~4"
 	},
+	"suggest"    : {
+		"ajshort/silverstripe-gridfieldextensions" : "Better management of albums"
+	},
 	"extra"      : {
 		"installer-name": "smugmug"
 	}

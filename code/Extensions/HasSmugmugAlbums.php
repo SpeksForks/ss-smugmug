@@ -18,9 +18,17 @@ class HasSmugmugAlbums extends HasSmugmugConfig
         'SmugmugAlbums' => 'SmugmugAlbum',
     );
 
+	protected $sortField;
+
+	public function __construct($tab = 'Smugmug', $useCMSFieldsAlways = false, $albumRelation = '', $sortField = 'Sort') {
+		parent::__construct($tab, $useCMSFieldsAlways);
+		$this->sortField = $sortField;
+	}
+
     public static function get_extra_config($class, $extension, $args)
     {
         $type = isset($args[2]) ? $args[2] : $class;
+	    $sortField = isset($args[3]) ? $args[3] : 'Sort';
 
         \Config::inst()->update(
             'SmugmugAlbum',
@@ -30,7 +38,13 @@ class HasSmugmugAlbums extends HasSmugmugConfig
             ]
         );
 
-        return null;
+        return [
+	        'many_many_extraFields' => [
+		        'SmugmugAlbums' => [
+			        $sortField => 'Int',
+		        ],
+	        ],
+        ];
     }
 
     protected function updateFields($fields) {
@@ -43,10 +57,18 @@ class HasSmugmugAlbums extends HasSmugmugConfig
                     'SmugmugAlbums',
                     _t('Smugmug.ALBUMS', 'Albums'),
                     $this->owner->SmugmugAlbums(),
-                    \GridFieldConfig_RelationEditor::create()
+                    $config = \GridFieldConfig_RelationEditor::create()
                 ),
                 \HeaderField::create('SmugmugConfig-Title', _t('Smugmug.CONFIG', 'Configuration'), 3),
             ]
         , 'SmugmugConfig');
+
+	    if(class_exists('GridFieldExtensions')) {
+		    $config->removeComponentsByType('GridFieldAddExistingAutocompleter');
+		    $config->addComponent(new \GridFieldAddExistingSearchButton);
+
+		    if($this->sortField)
+			    $config->addComponent(new \GridFieldOrderableRows($this->sortField));
+	    }
     }
 } 

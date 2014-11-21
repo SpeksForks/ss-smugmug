@@ -38,13 +38,14 @@ class SmugmugAlbum extends DataObject {
     public function getCMSFields() {
         $this->beforeUpdateCMSFields(function(FieldList $fields) {
                 $fields->insertBefore($lists = Select2Field::create('SmugmugAlbumID', _t('Smugmug.ALBUM_FROM_SMUGMUG', 'Album from Smugmug'), '',
-                        $this->mappedRepository()->albums(), null, 'Title', 'ID||Key'
+	                $this->mappedRepository()->albums(), null, 'Title', 'ID||Key'
                     ), 'Title');
 
                 $lists->requireSelection = true;
                 $lists->minSearchLength = 0;
                 $lists->suggestURL = false;
                 $lists->prefetch = 999999999999;
+                $lists->sortArray = true;
 
                 if($this->Title)
                     $fields->insertAfter(CheckboxField::create('UpdateTitleFromSmugmug', _t('Smugmug.TITLE_FROM_SMUGMUG', 'Update to use title from Smugmug')), 'Title');
@@ -105,9 +106,9 @@ class SmugmugAlbum extends DataObject {
     }
 
     public function getInfo() {
-        if(!isset($this->_info) && $this->SmugmugID && $this->SmugmugKey) {
+        if(!isset($this->_info) && $this->SmugmugId && $this->SmugmugKey) {
             try {
-                $this->_info = $this->repository()->album($this->SmugmugID, $this->SmugmugKey);
+                $this->_info = $this->repository()->album($this->SmugmugId, $this->SmugmugKey);
             } catch(Exception $e) {
                 if(Director::isDev())
                     user_error($e->getMessage());
