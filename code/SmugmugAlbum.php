@@ -23,14 +23,14 @@ class SmugmugAlbum extends DataObject {
 
     protected function repository() {
         if(!$this->repository)
-            $this->repository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayDataRepository', Utilities::env_value('APIKey'), Utilities::env_value('Nickname'));
+            $this->repository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayDataRepository', Utilities::env_value('APIKey', $this->owner), Utilities::env_value('Nickname', $this->owner));
 
         return $this->repository;
     }
 
     protected function mappedRepository() {
         if(!$this->mappedRepository)
-            $this->mappedRepository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayRepository', Utilities::env_value('APIKey'), Utilities::env_value('Nickname'));
+            $this->mappedRepository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayRepository', Utilities::env_value('APIKey', $this->owner), Utilities::env_value('Nickname', $this->owner));
 
         return $this->mappedRepository;
     }
@@ -93,7 +93,7 @@ class SmugmugAlbum extends DataObject {
 
         if(!isset($this->$var)) {
             try {
-                $this->$var = $this->repository()->images($this->SmugmugID, $this->SmugmugKey, true, $size, $params);
+                $this->$var = $this->repository()->images($this->SmugmugId, $this->SmugmugKey, true, $size, $params);
             } catch(Exception $e) {
                 if(Director::isDev())
                     user_error($e->getMessage());
@@ -159,4 +159,13 @@ class SmugmugAlbum extends DataObject {
         if(!$this->_updating && $do && $info = $this->Info)
             $this->Title = $info->Title;
     }
+
+	public function __get($property) {
+		$value = parent::__get($property);
+
+		if(!$value)
+			$value = $this->Info->$property;
+
+		return $value;
+	}
 }
