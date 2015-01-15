@@ -159,13 +159,4 @@ class SmugmugAlbum extends DataObject {
         if(!$this->_updating && $do && $info = $this->Info)
             $this->Title = $info->Title;
     }
-
-	public function __get($property) {
-		$value = parent::__get($property);
-
-		if(!$value)
-			$value = $this->Info->$property;
-
-		return $value;
-	}
 }
