@@ -18,7 +18,7 @@ class HasSmugmugAlbums extends HasSmugmugConfig
         'SmugmugAlbums' => 'SmugmugAlbum',
     );
 
-	protected $sortField;
+	protected $sortField = 'Sort';
 
 	public function __construct($tab = 'Smugmug', $useCMSFieldsAlways = false, $albumRelation = '', $sortField = 'Sort') {
 		parent::__construct($tab, $useCMSFieldsAlways);
@@ -56,19 +56,59 @@ class HasSmugmugAlbums extends HasSmugmugConfig
                 \GridField::create(
                     'SmugmugAlbums',
                     _t('Smugmug.ALBUMS', 'Albums'),
-                    $this->owner->SmugmugAlbums(),
+                    $this->owner->OrderedSmugmugAlbums(),
                     $config = \GridFieldConfig_RelationEditor::create()
                 ),
                 \HeaderField::create('SmugmugConfig-Title', _t('Smugmug.CONFIG', 'Configuration'), 3),
             ]
         , 'SmugmugConfig');
 
-	    if(class_exists('GridFieldExtensions')) {
+	    if(\ClassInfo::exists('GridFieldExtensions')) {
 		    $config->removeComponentsByType('GridFieldAddExistingAutocompleter');
 		    $config->addComponent(new \GridFieldAddExistingSearchButton);
 
 		    if($this->sortField)
 			    $config->addComponent(new \GridFieldOrderableRows($this->sortField));
 	    }
+
+	    if($detailForm = $config->getComponentByType('GridFieldDetailForm')) {
+		    $self = $this->owner;
+
+		    $detailForm->setItemEditFormCallback(function ($form, $controller) use ($self, $detailForm) {
+			    if($this->sortField && !\ClassInfo::exists('GridFieldExtensions')) {
+				    $form->Fields()->addFieldToTab('Root.Main', \NumericField::create('Sort')->setForm($form));
+			    }
+
+			    if (isset($controller->record))
+				    $record = $controller->record;
+			    elseif ($form->Record)
+				    $record = $form->Record;
+			    else
+				    $record = null;
+
+			    if ($record) {
+				    foreach(array_intersect($record->many_many(), \ClassInfo::ancestry($self)) as $relation => $type) {
+					    $form->Fields()->removeByName($relation);
+				    }
+
+				    $record->setEditFormWithParent($self, $form, $controller);
+			    }
+		    });
+	    }
     }
+
+	public function OrderedSmugmugAlbums() {
+		return $this->owner->SmugmugAlbums()->sort($this->sortField, 'ASC');
+	}
+
+	public function OrderedSmugmugAlbumsWithParent($list = null) {
+		if(!$list)
+			$list = $this->owner->OrderedSmugmugAlbums();
+
+		$self = $this->owner;
+
+		return $list->each(function($item) use ($self) {
+			$item->Parent = $self;
+		});
+	}
 } 

@@ -1,5 +1,4 @@
 <?php
-use Milkyway\SS\Smugmug\Api\Utilities;
 
 /**
  * Milkyway Multimedia
@@ -21,31 +20,31 @@ class SmugmugAlbum extends DataObject {
     protected $repository;
     protected $mappedRepository;
 
-    protected function repository() {
+    protected function repository($parent = null) {
         if(!$this->repository)
-            $this->repository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayDataRepository', Utilities::env_value('APIKey', $this->owner), Utilities::env_value('Nickname', $this->owner));
+            $this->repository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayDataRepository', $this->setting('APIKey', $parent), $this->setting('Nickname', $parent));
 
         return $this->repository;
     }
 
-    protected function mappedRepository() {
+    protected function mappedRepository($parent = null) {
         if(!$this->mappedRepository)
-            $this->mappedRepository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayRepository', Utilities::env_value('APIKey', $this->owner), Utilities::env_value('Nickname', $this->owner));
+            $this->mappedRepository = Object::create('Milkyway\SS\Smugmug\Repository\ArrayRepository', $this->setting('APIKey', $parent), $this->setting('Nickname', $parent));
 
         return $this->mappedRepository;
     }
 
     public function getCMSFields() {
         $this->beforeUpdateCMSFields(function(FieldList $fields) {
-                $fields->insertBefore($lists = Select2Field::create('SmugmugAlbumID', _t('Smugmug.ALBUM_FROM_SMUGMUG', 'Album from Smugmug'), '',
-	                $this->mappedRepository()->albums(), null, 'Title', 'ID||Key'
-                    ), 'Title');
+		        $fields->insertBefore($lists = Select2Field::create('SmugmugAlbumID', _t('Smugmug.ALBUM_FROM_SMUGMUG', 'Album from Smugmug'), '',
+			        $this->mappedRepository()->albums(), null, 'Title', 'ID||Key'
+		        ), 'Title');
 
-                $lists->requireSelection = true;
-                $lists->minSearchLength = 0;
-                $lists->suggestURL = false;
-                $lists->prefetch = 999999999999;
-                $lists->sortArray = true;
+		        $lists->requireSelection = true;
+		        $lists->minSearchLength = 0;
+		        $lists->suggestURL = false;
+		        $lists->prefetch = 999999999999;
+		        $lists->sortArray = true;
 
                 if($this->Title)
                     $fields->insertAfter(CheckboxField::create('UpdateTitleFromSmugmug', _t('Smugmug.TITLE_FROM_SMUGMUG', 'Update to use title from Smugmug')), 'Title');
@@ -65,6 +64,12 @@ class SmugmugAlbum extends DataObject {
         $fields = parent::getCMSFields();
         return $fields;
     }
+
+	public function setEditFormWithParent($parent, $form, $controller) {
+		if($lists = $form->Fields()->dataFieldByName('SmugmugAlbumID')) {
+			$lists->setSourceList($this->mappedRepository($parent));
+		}
+	}
 
     public function Images() {
         $size = null;
@@ -93,7 +98,7 @@ class SmugmugAlbum extends DataObject {
 
         if(!isset($this->$var)) {
             try {
-                $this->$var = $this->repository()->images($this->SmugmugId, $this->SmugmugKey, true, $size, $params);
+                $this->$var = $this->repository($this->Parent)->images($this->SmugmugId, $this->SmugmugKey, true, $size, $params);
             } catch(Exception $e) {
                 if(Director::isDev())
                     user_error($e->getMessage());
@@ -159,4 +164,31 @@ class SmugmugAlbum extends DataObject {
         if(!$this->_updating && $do && $info = $this->Info)
             $this->Title = $info->Title;
     }
+
+	protected function setting($setting, \Object $parent = null, $cache = true) {
+		$objects = [];
+		$callbacks = [];
+
+		if(\ClassInfo::exists('SiteConfig')) {
+			$callbacks['smugmug'] = function($keyParts, $key) use($setting) {
+				$value = SiteConfig::current_site_config()->SmugmugConfig()->$setting;
+
+				if(!$value)
+					$value = SiteConfig::current_site_config()->{'Smugmug_' . $setting};
+
+				if(!$value)
+					$value = SiteConfig::current_site_config()->{str_replace('.', '_', $key)};
+
+				return $value;
+			};
+		}
+
+		if($parent && ($parent->hasExtension('Milkyway\SS\Smugmug\Extensions\HasSmugmugAlbums') || $parent->hasExtension('Milkyway\SS\Smugmug\Extensions\HasSmugmugConfig'))) {
+			$objects[] = $parent;
+		}
+
+		$objects[] = singleton('SmugmugConfig');
+
+		return singleton('env')->get($setting, $objects, null, null, $callbacks, $cache, $cache);
+	}
 }
