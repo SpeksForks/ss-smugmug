@@ -82,11 +82,19 @@ class ArrayRepository extends Base {
                 elseif($key == 'Caption' && filter_var($item, FILTER_VALIDATE_URL) && $url = parse_url($item)) {
                     if(isset($url['host'])) {
                         if(strpos($url['host'], 'youtube') !== false)
-                            $info['YoutubeURL'] = $item;
+	                        $data['YoutubeURL'] = $item;
                         elseif(strpos($url['host'], 'youtu.be') !== false)
-                            $info['YoutubeURL'] = $item;
+	                        $data['YoutubeURL'] = $item;
                         elseif(strpos($url['host'], 'vimeo') !== false)
-                            $info['VimeoURL'] = $item;
+	                        $data['VimeoURL'] = $item;
+
+	                    if(isset($data['YoutubeURL']) && isset($url['query'])) {
+							$params = [];
+		                    parse_str($url['query'], $params);
+
+		                    if(isset($params['v']))
+			                    $data['YoutubeId'] = $params['v'];
+	                    }
                     }
                 }
                 elseif($key == 'CustomURL' && $size) {
