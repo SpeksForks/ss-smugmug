@@ -59,6 +59,11 @@ class SmugmugConfig extends DataObject
 			};
 		}
 
-		return singleton('env')->get($setting, [$this->owner], null, null, $callbacks, $cache, $cache);
+        return singleton('env')->get($setting, null, [
+            'objects' => [$this->owner],
+            'beforeConfigNamespaceCheckCallbacks' => $callbacks,
+            'fromCache' => $cache,
+            'doCache' => $cache,
+        ]);
 	}
 } 

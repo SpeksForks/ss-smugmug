@@ -189,6 +189,11 @@ class SmugmugAlbum extends DataObject {
 
 		$objects[] = singleton('SmugmugConfig');
 
-		return singleton('env')->get($setting, $objects, null, null, $callbacks, $cache, $cache);
+		return singleton('env')->get($setting, null, [
+            'objects' => $objects,
+            'beforeConfigNamespaceCheckCallbacks' => $callbacks,
+            'fromCache' => $cache,
+            'doCache' => $cache,
+        ]);
 	}
 }
