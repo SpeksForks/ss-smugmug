@@ -165,7 +165,7 @@ class SmugmugAlbum extends DataObject {
             $this->Title = $info->Title;
     }
 
-	protected function setting($setting, \Object $parent = null, $cache = true) {
+	public function setting($setting, \Object $parent = null, $cache = true) {
 		$objects = [];
 		$callbacks = [];
 

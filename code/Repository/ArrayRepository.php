@@ -81,6 +81,8 @@ class ArrayRepository extends Base {
                     $data['Title'] = $data['Name'] = $item;
                 elseif($key == 'Caption' && filter_var($item, FILTER_VALIDATE_URL) && $url = parse_url($item)) {
                     if(isset($url['host'])) {
+                        $item = urldecode($item);
+
                         if(strpos($url['host'], 'youtube') !== false)
 	                        $data['YoutubeURL'] = $item;
                         elseif(strpos($url['host'], 'youtu.be') !== false)
