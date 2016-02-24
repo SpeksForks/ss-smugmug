@@ -16,4 +16,4 @@ abstract class Base {
     public function __construct($key, $nickname, $cache = 6) {
         $this->smugmug = \Injector::inst()->createWithArgs('Milkyway\SS\Smugmug\Api\JSON', [$key, $nickname, $cache]);
     }
-} 
+}

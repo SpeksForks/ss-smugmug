@@ -66,4 +66,4 @@ class SmugmugConfig extends DataObject
             'doCache' => $cache,
         ]);
 	}
-} 
+}

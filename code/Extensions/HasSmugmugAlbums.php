@@ -111,4 +111,4 @@ class HasSmugmugAlbums extends HasSmugmugConfig
 			$item->Parent = $self;
 		});
 	}
-} 
+}
